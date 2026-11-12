@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CAPA Trend Review</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232f5d50'/%3E%3Crect x='8' y='15' width='4' height='9' rx='1' fill='%23fff'/%3E%3Crect x='14' y='10' width='4' height='14' rx='1' fill='%23fff'/%3E%3Crect x='20' y='18' width='4' height='6' rx='1' fill='%23c39a5b'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f5f3ee;
+    --surface: #ffffff;
+    --sunken: #faf9f6;
+    --ink: #1f1d1a;
+    --ink-2: #57534b;
+    --muted: #8a857b;
+    --line: #e6e2d9;
+    --line-strong: #d3cdc0;
+    --accent: #2f5d50;
+    --accent-hover: #264c41;
+    --accent-soft: #e4ede8;
+    --sand: #c39a5b;
+    --sand-soft: #f4ecdf;
+    --rust: #9a4b22;
+    --rust-soft: #f6e8de;
+    --olive: #6b5f22;
+    --olive-soft: #efecd9;
+    --radius: 10px;
+    --shadow: 0 1px 2px rgba(31, 29, 26, .04), 0 2px 8px rgba(31, 29, 26, .04);
+    --sans: "Inter", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+    --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--paper); color: var(--ink);
+    font: 14.5px/1.55 var(--sans); -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -.01em; }
+  button { font: inherit; }
+
+  /* ---------- header ---------- */
+  header { background: var(--surface); border-bottom: 1px solid var(--line); }
+  .bar { max-width: 1200px; margin: 0 auto; padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand svg { flex: none; }
+  .brand span { font-family: var(--serif); font-size: 19px; font-weight: 600; }
+  .crumb { font-size: 13px; color: var(--muted); }
+
+  /* ---------- layout ---------- */
+  .layout { max-width: 1200px; margin: 0 auto; padding: 32px; display: grid; grid-template-columns: 300px 1fr; gap: 32px; align-items: start; }
+  body.start .layout { grid-template-columns: minmax(0, 440px); justify-content: center; padding-top: 9vh; }
+  body.start main { display: none; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; padding: 20px; } }
+
+  /* ---------- settings card ---------- */
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+  aside.card { padding: 24px; position: sticky; top: 24px; }
+  body.start aside.card { padding: 32px; }
+  .card-title { font-family: var(--serif); font-size: 18px; font-weight: 600; margin: 0 0 20px; }
+  body.start .card-title { font-size: 24px; margin-bottom: 24px; }
+
+  .field { margin-bottom: 18px; }
+  .field > label, .field > .label { display: block; font-size: 12.5px; font-weight: 600; color: var(--ink-2); margin-bottom: 7px; }
+
+  .drop {
+    display: flex; align-items: center; gap: 12px; padding: 14px; cursor: pointer;
+    border: 1px dashed var(--line-strong); border-radius: 8px; background: var(--sunken);
+    transition: border-color .15s, background .15s;
+  }
+  body.start .drop { flex-direction: column; align-items: center; text-align: center; padding: 30px 16px; gap: 10px; }
+  body.start .drop .icon { align-self: center; margin: 0 auto; width: 42px; height: 42px; }
+  body.start .drop .txt { width: 100%; }
+  .drop:hover, .drop.over { border-color: var(--accent); background: var(--accent-soft); }
+  .drop.loaded { border-style: solid; background: var(--surface); }
+  .drop input { display: none; }
+  .drop .icon { flex: none; width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center; background: var(--surface); border: 1px solid var(--line); color: var(--accent); }
+  .drop.loaded .icon { background: var(--accent-soft); border-color: transparent; }
+  .drop .txt { min-width: 0; }
+  .drop .name { display: block; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  body.start .drop .name { white-space: normal; }
+  .drop .meta { display: block; font-size: 12.5px; color: var(--muted); }
+
+  .select { position: relative; }
+  .select select {
+    width: 100%; appearance: none; -webkit-appearance: none; padding: 9px 34px 9px 11px; font: inherit; font-size: 14px; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--line-strong); border-radius: 8px; cursor: pointer;
+  }
+  .select::after { content: ""; position: absolute; right: 13px; top: 50%; width: 7px; height: 7px; margin-top: -5px; border-right: 1.5px solid var(--ink-2); border-bottom: 1.5px solid var(--ink-2); transform: rotate(45deg); pointer-events: none; }
+  .select select:disabled { color: var(--muted); background: var(--sunken); cursor: default; }
+  .select select:hover:not(:disabled) { border-color: var(--ink-2); }
+  select:focus-visible, button:focus-visible, a:focus-visible, .drop:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .hint { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 16px; font-weight: 600; font-size: 14px; border-radius: 8px; cursor: pointer; text-decoration: none;
+    border: 1px solid transparent; transition: background .15s, border-color .15s;
+  }
+  .btn.primary { width: 100%; color: #fff; background: var(--ink); margin-top: 6px; }
+  .btn.primary:hover:not(:disabled) { background: #36332e; }
+  .btn.primary:disabled { background: #c4bfb5; cursor: default; }
+  .btn.green { color: #fff; background: var(--accent); }
+  .btn.green:hover { background: var(--accent-hover); }
+  .btn.ghost { color: var(--ink); background: var(--surface); border-color: var(--line-strong); }
+  .btn.ghost:hover { border-color: var(--ink-2); }
+  .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error { margin-top: 14px; padding: 10px 12px; font-size: 13px; color: var(--rust); background: var(--rust-soft); border-radius: 8px; display: none; }
+
+  /* ---------- results header ---------- */
+  .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  .eyebrow { font-size: 12.5px; font-weight: 600; color: var(--accent); margin-bottom: 4px; }
+  .head h1 { font-size: 30px; margin: 0; line-height: 1.15; }
+  .head p { margin: 6px 0 0; color: var(--ink-2); }
+  .downloads { display: flex; gap: 8px; }
+
+  /* ---------- tabs ---------- */
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 24px; overflow-x: auto; }
+  .tab { background: none; border: 0; padding: 10px 14px; font-size: 14px; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); font-weight: 600; }
+  .tab .count { font-size: 12px; color: var(--muted); font-weight: 500; margin-left: 4px; }
+  .panel[hidden] { display: none; }
+
+  /* ---------- KPI tiles ---------- */
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px; }
+  @media (max-width: 680px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+  .kpi { padding: 16px 18px; }
+  .kpi .label { font-size: 12.5px; font-weight: 500; color: var(--ink-2); }
+  .kpi .row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: 6px 0 4px; }
+  .kpi .value { font-size: 30px; font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -.02em; line-height: 1; }
+  .delta { font-size: 12px; font-weight: 600; padding: 2px 7px; border-radius: 99px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .delta.good { color: var(--accent); background: var(--accent-soft); }
+  .delta.bad { color: var(--rust); background: var(--rust-soft); }
+  .delta.neutral { color: var(--ink-2); background: #eeece6; }
+  .kpi .note { font-size: 12.5px; color: var(--muted); }
+
+  /* ---------- blocks ---------- */
+  .block { margin-bottom: 32px; }
+  .block-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 12px; }
+  .block-head h2 { font-size: 19px; margin: 0; }
+  .block-head small { font-size: 12.5px; color: var(--muted); }
+
+  .findings { padding: 4px 20px; }
+  .finding { padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .finding:last-child { border-bottom: 0; }
+  .finding b { display: block; font-size: 13.5px; font-weight: 600; margin-bottom: 3px; }
+  .finding p { margin: 0; color: var(--ink-2); }
+
+  /* ---------- chart ---------- */
+  .chart { padding: 20px 22px 14px; margin-bottom: 12px; }
+  .chart .legend { margin-bottom: 26px; }
+  .legend { display: flex; gap: 18px; font-size: 12.5px; color: var(--ink-2); margin-bottom: 8px; }
+  .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .legend .i::before { background: var(--accent); }
+  .legend .c::before { background: var(--sand); }
+  .plot { position: relative; height: 210px; margin-left: 34px; }
+  .grid { position: absolute; inset: 0; }
+  .grid div { position: absolute; left: 0; right: 0; border-top: 1px solid var(--line); }
+  .grid div.base { border-top-color: var(--line-strong); }
+  .grid span { position: absolute; left: -34px; width: 28px; text-align: right; top: -8px; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .bars { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(4, 1fr); }
+  .group { display: flex; justify-content: center; align-items: flex-end; gap: 6px; height: 100%; }
+  .col { width: 30%; max-width: 44px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
+  .col .b { position: relative; width: 100%; border-radius: 4px 4px 0 0; min-height: 2px; transition: height .5s ease; }
+  .col .v { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); padding-bottom: 4px; font-size: 11.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .col.i .b { background: var(--accent); }
+  .col.c .b { background: var(--sand); }
+  .group.current { background: linear-gradient(var(--sunken), var(--sunken)); border-radius: 6px 6px 0 0; }
+  .xlabels { display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; font-size: 12px; color: var(--ink-2); padding-top: 8px; margin-left: 34px; }
+  .xlabels .current { font-weight: 600; color: var(--ink); }
+
+  /* ---------- tables ---------- */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 10px 14px; text-align: right; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+  th:first-child, td:first-child { text-align: left; }
+  td.text { text-align: left; color: var(--ink-2); }
+  th { font-weight: 600; font-size: 12px; color: var(--ink-2); background: var(--sunken); white-space: nowrap; }
+  td:first-child { white-space: nowrap; }
+  #cleaning td { vertical-align: top; }
+  #cleaning td.text { font-size: 13px; }
+  #cleaning td.cols { max-width: 200px; font-size: 12.5px; color: var(--muted); }
+  #cleaning td.reason { min-width: 230px; }
+  tr:last-child td { border-bottom: 0; }
+  tr.current td { font-weight: 600; background: #fcfbf8; }
+
+  /* ---------- report sections ---------- */
+  .section { padding: 6px 22px 8px; margin-bottom: 14px; }
+  .section h3 { font-size: 17px; margin: 14px 0 2px; }
+  .section h3 span { color: var(--muted); font-weight: 500; margin-right: 6px; font-family: var(--sans); font-size: 13px; }
+  .chart-review-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .chart-review-item { min-width: 0; padding: 16px; }
+  .chart-review-item h3 { margin: 0 0 4px; font-size: 17px; }
+  .chart-review-item p { margin: 0 0 10px; color: var(--ink-2); font-size: 12.5px; }
+  .chart-preview { display: block; width: 100%; padding: 8px; border: 1px solid var(--line); border-radius: 6px; background: #fff; cursor: pointer; }
+  .chart-preview:hover { border-color: var(--accent); }
+  .chart-preview img { display: block; width: 100%; height: auto; max-height: 340px; object-fit: contain; }
+  .chart-preview span { display: block; margin-top: 6px; color: var(--accent); font-size: 12px; font-weight: 600; }
+  .chart-edit { display: flex; align-items: end; gap: 10px; margin-top: 12px; }
+  .chart-edit[hidden] { display: none; }
+  .chart-edit .field { flex: 1; margin: 0; }
+  .chart-edit label { display: block; margin-bottom: 5px; color: var(--ink-2); font-size: 12px; font-weight: 600; }
+  @media (max-width: 680px) { .chart-review-grid { grid-template-columns: 1fr; } }
+  ol.assume { margin: 0; padding: 18px 22px 18px 40px; color: var(--ink-2); }
+  ol.assume li { margin-bottom: 10px; padding-left: 4px; }
+  .footnote { padding: 12px 14px; font-size: 12.5px; color: var(--muted); border-top: 1px solid var(--line); }
+
+  /* ---------- loading skeleton ---------- */
+  .progress { height: 3px; background: var(--line); border-radius: 3px; overflow: hidden; margin-bottom: 28px; }
+  .progress div { width: 35%; height: 100%; background: var(--accent); border-radius: 3px; animation: slide 1.2s ease-in-out infinite; }
+  @keyframes slide { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
+  .sk { background: linear-gradient(90deg, #ece9e2 0%, #f4f2ec 50%, #ece9e2 100%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; }
+  @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+  .loading-text { font-size: 13.5px; color: var(--ink-2); margin-bottom: 10px; }
+
+  [hidden] { display: none !important; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body class="start">
+
+<header>
+  <div class="bar">
+    <div class="brand">
+      <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="7" fill="#2f5d50"/>
+        <rect x="8" y="15" width="4" height="9" rx="1" fill="#fff"/>
+        <rect x="14" y="10" width="4" height="14" rx="1" fill="#fff"/>
+        <rect x="20" y="18" width="4" height="6" rx="1" fill="#c39a5b"/>
+      </svg>
+      <span>CAPA Trend Review</span>
+    </div>
+    <span class="crumb" id="crumb">Quarterly report</span>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="card">
+    <h2 class="card-title" id="cardTitle">New report</h2>
+
+    <div class="field">
+      <span class="label">CAPA export</span>
+      <label class="drop" id="drop">
+        <input type="file" id="file" accept=".csv,.xlsx,.xls">
+        <span class="icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 17v-6"/><path d="m9.5 13.5 2.5-2.5 2.5 2.5"/>
+          </svg>
+        </span>
+        <span class="txt">
+          <span class="name" id="fileName">Choose a file</span>
+          <span class="meta" id="fileMeta">.xlsx or .csv, or drag it here</span>
+        </span>
+      </label>
+    </div>
+
+    <div class="field">
+      <label for="site">Site</label>
+      <div class="select"><select id="site" disabled><option value="">All sites</option></select></div>
+    </div>
+
+    <div class="field">
+      <label for="quarter">Report quarter</label>
+      <div class="select"><select id="quarter" disabled><option>Select a file first</option></select></div>
+      <div class="hint">Compared with the previous three quarters.</div>
+    </div>
+
+    <button class="btn primary" id="run" disabled><span id="runLabel">Generate report</span></button>
+    <div class="error" id="error"></div>
+  </aside>
+
+  <main>
+    <!-- loading -->
+    <div id="loading" hidden>
+      <div class="progress"><div></div></div>
+      <div class="loading-text">Cleaning the data, running the statistics and writing the report…</div>
+      <div class="sk" style="height:36px;width:55%;margin-bottom:22px"></div>
+      <div class="kpis">
+        <div class="sk" style="height:104px"></div><div class="sk" style="height:104px"></div><div class="sk" style="height:104px"></div>
+        <div class="sk" style="height:104px"></div><div class="sk" style="height:104px"></div><div class="sk" style="height:104px"></div>
+      </div>
+      <div class="sk" style="height:240px"></div>
+    </div>
+
+    <!-- results -->
+    <div id="results" hidden>
+      <div class="head">
+        <div>
+          <div class="eyebrow" id="eyebrow"></div>
+          <h1 id="title"></h1>
+          <p id="period"></p>
+        </div>
+        <div class="downloads">
+          <a class="btn ghost" id="dlJson" href="#">JSON</a>
+          <a class="btn green" id="dlDocx" href="#">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
+            Word report
+          </a>
+        </div>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" aria-selected="true" data-panel="overview">Overview</button>
+        <button class="tab" role="tab" aria-selected="false" data-panel="sections">Report sections<span class="count" id="nSections"></span></button>
+        <button class="tab" role="tab" aria-selected="false" data-panel="charts">Charts<span class="count" id="nCharts"></span></button>
+        <button class="tab" role="tab" aria-selected="false" data-panel="quality">Data quality<span class="count" id="nCleaning"></span></button>
+        <button class="tab" role="tab" aria-selected="false" data-panel="assumptions">Assumptions</button>
+      </div>
+
+      <div class="panel" id="overview">
+        <div class="kpis" id="kpis"></div>
+
+        <div class="block">
+          <div class="block-head"><h2>Key findings</h2></div>
+          <div class="card findings" id="findings"></div>
+        </div>
+
+        <div class="block">
+          <div class="block-head"><h2>Last four quarters</h2></div>
+          <div class="card chart">
+            <div class="legend"><span class="i">Initiated</span><span class="c">Closed (done)</span></div>
+            <div class="plot"><div class="grid" id="grid"></div><div class="bars" id="bars"></div></div>
+            <div class="xlabels" id="xlabels"></div>
+          </div>
+          <div class="card table-wrap"><table id="flow"></table></div>
+        </div>
+      </div>
+
+      <div class="panel" id="sections" hidden></div>
+
+      <div class="panel" id="charts" hidden></div>
+
+      <div class="panel" id="quality" hidden>
+        <div class="card table-wrap"><table id="cleaning"></table><div class="footnote" id="cleaningNote"></div></div>
+      </div>
+
+      <div class="panel" id="assumptions" hidden>
+        <div class="card"><ol class="assume" id="assumeList"></ol></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const state = { id: null, chartOverrides: {} };
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const num = (v, d = 2) => typeof v === "number" ? v.toLocaleString(undefined, { maximumFractionDigits: d }) : esc(v);
+
+function showError(msg) { $("error").textContent = msg; $("error").style.display = msg ? "block" : "none"; }
+
+async function api(url, opts) {
+  const res = await fetch(url, opts);
+  const data = await res.json().catch(() => ({ error: "Unexpected server response." }));
+  if (!res.ok || data.error) throw new Error(data.error || "Request failed.");
+  return data;
+}
+
+/* ---------- upload ---------- */
+async function upload(file) {
+  if (!file) return;
+  showError("");
+  state.chartOverrides = {};
+  $("fileName").textContent = file.name;
+  $("fileMeta").textContent = "Reading file…";
+  $("drop").classList.remove("loaded");
+  $("run").disabled = true;
+  const fd = new FormData();
+  fd.append("file", file);
+  try {
+    const d = await api("/api/inspect", { method: "POST", body: fd });
+    state.id = d.id;
+    $("drop").classList.add("loaded");
+    $("fileMeta").textContent = `${d.records.toLocaleString()} records · ${d.sites.length} sites`;
+    $("site").innerHTML = `<option value="">All sites</option>` +
+      d.sites.map((s) => `<option value="${esc(s.name)}">${esc(s.name)} (${s.count})</option>`).join("");
+    state.quarters = d.quarters;
+    fillQuarters();
+    $("site").disabled = $("quarter").disabled = $("run").disabled = false;
+  } catch (e) {
+    $("fileName").textContent = "Choose a file";
+    $("fileMeta").textContent = ".xlsx or .csv, or drag it here";
+    showError(e.message);
+  }
+}
+
+// The quarter list follows the chosen site: only quarters where that site has opened CAPAs.
+function fillQuarters() {
+  const q = state.quarters[$("site").value] || state.quarters[""];
+  $("quarter").innerHTML = q.options.map((o) => {
+    const def = o.value === q.default;
+    return `<option value="${o.value}"${def ? " selected" : ""}>${esc(o.label)}${def ? " (latest complete)" : ""} · ${o.count} opened</option>`;
+  }).join("");
+}
+$("site").addEventListener("change", () => { showError(""); fillQuarters(); });
+
+$("file").addEventListener("change", (e) => upload(e.target.files[0]));
+const drop = $("drop");
+["dragenter", "dragover"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", (e) => upload(e.dataTransfer.files[0]));
+
+/* ---------- generate ---------- */
+$("run").addEventListener("click", async () => {
+  showError("");
+  document.body.classList.remove("start");
+  $("cardTitle").textContent = "Report settings";
+  $("results").hidden = true;
+  $("loading").hidden = false;
+  $("run").disabled = true;
+  $("runLabel").textContent = "Generating";
+  $("run").insertAdjacentHTML("afterbegin", '<span class="spinner" id="spin"></span>');
+  try {
+    const d = await api("/api/run", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: state.id, site: $("site").value, quarter: $("quarter").value }),
+    });
+    render(d);
+  } catch (e) {
+    showError(e.message);
+    if (!$("title").textContent) { document.body.classList.add("start"); $("cardTitle").textContent = "New report"; }
+    else $("results").hidden = false;
+  } finally {
+    $("loading").hidden = true;
+    $("spin")?.remove();
+    $("run").disabled = false;
+    $("runLabel").textContent = "Generate report";
+  }
+});
+
+/* ---------- tabs ---------- */
+document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => selectTab(t.dataset.panel)));
+function selectTab(name) {
+  document.querySelectorAll(".tab").forEach((t) => t.setAttribute("aria-selected", t.dataset.panel === name));
+  document.querySelectorAll(".panel").forEach((p) => p.hidden = p.id !== name);
+}
+
+$("charts").addEventListener("click", async (event) => {
+  const edit = event.target.closest("[data-edit-chart]");
+  if (edit) {
+    const controls = $("edit-" + edit.dataset.editChart);
+    controls.hidden = !controls.hidden;
+    if (!controls.hidden) controls.querySelector("select").focus();
+    return;
+  }
+
+  const apply = event.target.closest("[data-apply-chart]");
+  if (!apply) return;
+  const chartId = apply.dataset.applyChart;
+  const chartType = $("type-" + chartId).value;
+  const overrides = { ...state.chartOverrides, [chartId]: chartType };
+  apply.disabled = true;
+  apply.textContent = "Updating...";
+  showError("");
+  try {
+    const result = await api(`/api/chart/${state.id}`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ site: $("site").value, quarter: $("quarter").value, chart_overrides: overrides }),
+    });
+    state.chartOverrides = overrides;
+    $("dlDocx").href = `/api/download/${state.id}/${encodeURIComponent(result.files.docx)}`;
+    $("dlJson").href = `/api/download/${state.id}/${encodeURIComponent(result.files.json)}`;
+    renderCharts(result.charts);
+  } catch (error) {
+    showError(error.message);
+    apply.disabled = false;
+    apply.textContent = "Apply chart";
+  }
+});
+
+/* ---------- render ---------- */
+const finding = (p) =>
+  `<div class="finding">${p.lead ? `<b>${esc(p.lead)}</b>` : ""}<p>${esc(p.text)}</p></div>`;
+
+function delta(k, prevQ) {
+  if (k.prev == null || k.value == null) return "";
+  const diff = k.value - k.prev;
+  if (Math.abs(diff) < 1e-9) return `<span class="delta neutral" title="vs ${esc(prevQ)}">no change</span>`;
+  const cls = !k.better ? "neutral" : ((diff > 0) === (k.better === "up") ? "good" : "bad");
+  const arrow = diff > 0 ? "↑" : "↓";
+  const d = Math.abs(diff) < 1 ? Math.abs(diff).toFixed(2) : num(Math.abs(diff), 1);
+  return `<span class="delta ${cls}" title="Change vs ${esc(prevQ)}">${arrow} ${d}${k.unit === "%" ? " pts" : ""}</span>`;
+}
+
+function niceMax(v) {
+  const p = Math.pow(10, Math.floor(Math.log10(v)));
+  return [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10].map((m) => m * p).find((m) => m >= v * 1.08) || v;
+}
+
+function render(d) {
+  $("results").hidden = false;
+  selectTab("overview");
+  $("crumb").textContent = `${d.quarter} · ${d.site}`;
+  $("eyebrow").textContent = d.title;
+  $("title").textContent = `${d.quarter}, ${d.site}`;
+  $("period").textContent = `${d.period}. Changes are shown against ${d.prev_quarter}.`;
+  $("dlDocx").href = `/api/download/${state.id}/${encodeURIComponent(d.files.docx)}`;
+  $("dlJson").href = `/api/download/${state.id}/${encodeURIComponent(d.files.json)}`;
+
+  $("kpis").innerHTML = d.kpis.map((k) => `<div class="card kpi">
+      <div class="label">${esc(k.label)}</div>
+      <div class="row"><span class="value">${k.value == null ? "–" : num(k.value, 2) + (k.unit === "%" ? "%" : "")}</span>${delta(k, d.prev_quarter)}</div>
+      <div class="note">${esc(k.note)}</div></div>`).join("");
+  $("findings").innerHTML = d.findings.map(finding).join("");
+
+  // chart: one axis, two series, values labelled
+  const rows = d.flow.rows;
+  const top = niceMax(Math.max(1, ...rows.flatMap((r) => [r[1], r[2]])));
+  $("grid").innerHTML = [0, .25, .5, .75, 1].map((f) =>
+    `<div class="${f === 0 ? "base" : ""}" style="bottom:${f * 100}%"><span>${num(top * f, 0)}</span></div>`).join("");
+  $("bars").innerHTML = rows.map((r, i) => `<div class="group${i === rows.length - 1 ? " current" : ""}">
+      <div class="col i" title="${esc(r[0])}: ${r[1]} initiated"><div class="b" style="height:0"><span class="v">${r[1]}</span></div></div>
+      <div class="col c" title="${esc(r[0])}: ${r[2]} closed"><div class="b" style="height:0"><span class="v">${r[2]}</span></div></div>
+    </div>`).join("");
+  requestAnimationFrame(() => {
+    document.querySelectorAll("#bars .group").forEach((g, i) => {
+      const [bi, bc] = g.querySelectorAll(".b");
+      bi.style.height = `${(rows[i][1] / top) * 100}%`;
+      bc.style.height = `${(rows[i][2] / top) * 100}%`;
+    });
+  });
+  $("xlabels").innerHTML = rows.map((r, i) => `<div class="${i === rows.length - 1 ? "current" : ""}">${esc(r[0])}</div>`).join("");
+  $("flow").innerHTML = `<tr>${d.flow.columns.map((c) => `<th>${esc(c)}</th>`).join("")}</tr>` +
+    rows.map((r, i) => `<tr class="${i === rows.length - 1 ? "current" : ""}">${r.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`).join("");
+
+  $("sections").innerHTML = d.sections.map((s) =>
+    `<div class="card section"><h3><span>${esc(s.number)}</span>${esc(s.title)}</h3>${s.paragraphs.map(finding).join("")}</div>`).join("");
+  $("nSections").textContent = d.sections.length;
+  state.chartOverrides = {};
+  renderCharts(d.charts);
+
+  $("cleaning").innerHTML = `<tr><th>Step</th><th style="text-align:left">Column</th><th>Rows</th><th style="text-align:left">Action</th><th style="text-align:left">Reason</th></tr>` +
+    d.cleaning.map((r) => `<tr><td>${esc(r[0])}</td><td class="text cols">${esc(r[1])}</td><td>${num(r[2], 0)}</td><td class="text">${esc(r[3])}</td><td class="text reason">${esc(r[4])}</td></tr>`).join("");
+  $("cleaningNote").textContent = d.cleaning_note;
+  $("nCleaning").textContent = d.cleaning.length;
+  $("assumeList").innerHTML = d.assumptions.map((a) => `<li>${esc(a)}</li>`).join("");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function renderCharts(charts) {
+  $("charts").innerHTML = `<div class="chart-review-grid">${charts.map((chart) => `
+    <article class="card chart-review-item">
+      <h3>${esc(chart.section)} ${esc(chart.section_title)}</h3>
+      <p>${esc(chart.caption)}</p>
+      <button class="chart-preview" type="button" data-edit-chart="${esc(chart.id)}" aria-label="Edit ${esc(chart.caption)}">
+        <img src="${esc(chart.image)}" alt="${esc(chart.caption)}">
+        <span>Edit chart</span>
+      </button>
+      <div class="chart-edit" id="edit-${esc(chart.id)}" hidden>
+        <div class="field"><label for="type-${esc(chart.id)}">Chart type</label>
+          <div class="select"><select id="type-${esc(chart.id)}">${chart.types.map((type) =>
+            `<option value="${esc(type)}"${type === chart.type ? " selected" : ""}>${esc(type[0].toUpperCase() + type.slice(1))}</option>`).join("")}</select></div>
+        </div>
+        <button class="btn green" type="button" data-apply-chart="${esc(chart.id)}">Apply chart</button>
+      </div>
+    </article>`).join("")}</div>`;
+  $("nCharts").textContent = charts.length;
+}
+</script>
+</body>
+</html>

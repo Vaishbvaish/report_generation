@@ -1,0 +1,10 @@
+Flask
+matplotlib
+numpy
+openpyxl
+pandas
+pydantic
+pytest
+python-docx
+scipy
+xlrd

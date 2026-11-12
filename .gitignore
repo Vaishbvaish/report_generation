@@ -1,0 +1,27 @@
+# Python bytecode and test/cache files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local environments and editor settings
+.venv/
+venv/
+env/
+.env
+.idea/
+.vscode/
+
+# CAPA source data and generated reports (may contain confidential records)
+*.xlsx
+*.xls
+*.csv
+*.docx
+*.json
+*.png
+output/
+output_csv/
+runs/
+
+# OS files
+.DS_Store
+Thumbs.db
